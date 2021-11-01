@@ -1,28 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>web app</title>
-    <link rel="stylesheet" href="stylesheet.css">
-</head>
-<body>
-    <main>
-        <div>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>uic scheduler</title>
+        <link rel="stylesheet" href="stylesheet.css">
+        
+        <!-- should this be at the end of the body? -->
+        <script src="index.js" defer></script>
+
+    </head>
+
+    <body>
+        <main>
+            
             <input placeholder="search courses"
             id="search-input">
-            <button id="search-btn">Search</button>
-        </div>
-        
-        <table id="table">
-            <thead>
-                <th>Name</th>
-                <th>Meeting Times</th>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </main>
-    <script src="index.js"></script>
-</body>
+            <button class="button" id="search-btn">Search</button>
+            
+            <div class="table container">
+                <div class="search container">
+                    <table class="search table">
+                        <thead>
+                            <th>Name</th>
+                            <th>Meeting Times</th>
+                            <th>Add</th>
+                        </thead>
+                        <tbody class="search table body"></tbody>
+                    </table>
+                </div>
+                
+                <div class="chosen container">
+                    <table class="chosen table">
+                        <thead>
+                            <th>Name</th>
+                            <th>Meeting Times</th>
+                            <th>Delete</th>
+                        </thead>
+                        <tbody class="chosen table body"></tbody>
+                    </table>
+                </div>
+                
+                <div class="calendar button container">
+                    <button id="calendar-btn">Add to Calendar</button>
+                </div>
+
+            </div>
+        </main>
+    </body>
 </html>

@@ -29,9 +29,30 @@ class DbService {
         try {
             // if query successful, resolve. otherwise reject
             const response = await new Promise((resolve, reject) => {
-                const query = "SELECT * FROM course_ids;";
+                const query = "SELECT CRN,concat(`Crs Subj Cd`,' ',`Crs Nbr`) AS crs FROM course_data;";
 
                 connection.query(query, (err, results) => {
+                    if (err) reject (new Error(err.message)); // will be caught be catch block
+                    resolve(results);
+                })
+
+            });
+
+            console.log(response);
+            return response;
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async searchByCRN(crn) {
+        try {
+            // if query successful, resolve. otherwise reject
+            const response = await new Promise((resolve, reject) => {
+                const query = "SELECT CRN,concat(`Crs Subj Cd`,' ',`Crs Nbr`) AS crs FROM course_data WHERE crn = ?;";
+
+                connection.query(query, [crn], (err, results) => {
                     if (err) reject (new Error(err.message)); // will be caught be catch block
                     resolve(results);
                 })

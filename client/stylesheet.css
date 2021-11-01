@@ -16,3 +16,13 @@ table, th, td {
 th, td {
     padding: 5px;
 }
+
+.table.container {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+}
+
+.calendar.button {
+    margin-top: 50px;
+}
