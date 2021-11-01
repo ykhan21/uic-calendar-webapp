@@ -91,7 +91,54 @@ function loadHTMLTable(data) {
 const calendarBtn = document.querySelector('#calendar-btn');
 
 calendarBtn.onclick = function() {
+    
+    // options0.addEvent(options);
+    // options0.download();
+
+    // const link = new datebook.GoogleCalendar(options0).render();
+    // console.log(link);
+    // // console.log(options);
+    // // const ical = new datebook.ICalendar(options);
+
+    // let global;
+
+
     fetch('http://localhost:5000/getCalendar/')
-    .then(response => response.text())
-    .then(data => console.log(data))
+    .then(response => response.json())
+    .then(data => loadCalendar(data))
+    // .then(response => response.text())
+    // .then(data => window.location.href = data)
+    // .then(data => data[start]=new Date('2022-07-08T19:00:00'))
+    // .then(data => data[end]=new Date('2022-07-08T23:00:00'))
+    // .then(data => console.log(data))
+    // .then(data => ( new datebook.ICalendar(data) ))
+}
+
+function loadCalendar(data) {
+    const options1 = {
+        title: 'Happy Hour1',
+        location: 'The Bar, New York, NY',
+        description: 'Let\'s blow off some steam with a tall cold one!',
+        start: new Date('2021-11-05T19:00:00'),
+        end: new Date('2021-11-05T20:00:00')
+    };
+    const options2 = {
+        title: 'Happy Hour2',
+        location: 'The Bar, New York, NY',
+        description: 'Hello!!',
+        start: new Date('2021-11-05T17:00:00'),
+        end: new Date('2021-11-05T18:00:00')
+    };
+
+    let data1 = data[0]
+    const options3 = {
+        title: data1['title'],
+        location: data1['location'],
+        description: data1['description'],
+        start: new Date(data1['start']),
+        end: new Date(data1['end'])
+    }
+
+    let ical1 = (new datebook.ICalendar(options3));
+    ical1.download();
 }

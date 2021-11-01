@@ -14,18 +14,21 @@ app.use(express.urlencoded({ extended : false })); //we wont be sending in any f
 let chosenCRNs = [];
 
 const datebook = require('datebook');
-const ical = new datebook.ICalendar({
-    title: 'Happy Hour',
+
+const options1 = {
+    title: 'Happy Hour1',
     location: 'The Bar, New York, NY',
     description: 'Let\'s blow off some steam with a tall cold one!',
-    start: new Date('2022-07-08T19:00:00'),
-    end: new Date('2022-07-08T23:30:00'),
-    // an event that recurs every two weeks:
-    recurrence: {
-      frequency: 'WEEKLY',
-      interval: 2
-    }
-})
+    start: new Date('2021-11-05T19:00:00'),
+    end: new Date('2021-11-05T20:00:00')
+};
+const options2 = {
+    title: 'Happy Hour2',
+    location: 'The Bar, New York, NY',
+    description: 'Hello!!',
+    start: new Date('2021-11-05T17:00:00'),
+    end: new Date('2021-11-05T18:00:00')
+};
 
 // create
 app.post('/insert', (request, response) => {
@@ -79,10 +82,15 @@ app.get('/addCourse/:crn', (request, response) => {
 
 app.get('/getCalendar', (request, response) => {
     console.log("sending calendar...");
-    const link = new datebook.GoogleCalendar(ical).render();
-    const result = {link:link};
+    // const link = new datebook.GoogleCalendar(options0).render();
+    // // const result = {link:link};
 
-    response.end(link);
+    // console.log(link);
+    response.send(JSON.stringify([options1,options2]));
+    
+    // console.log(options);
+    // console.log(JSON.stringify(options));
+    // response.end(JSON.stringify(options));
 })
 
 // update
