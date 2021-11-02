@@ -11,24 +11,9 @@ app.use(cors()); //so that if we have an incoming api call, it wont block it and
 app.use(express.json()); //so we'll be able to send in json format
 app.use(express.urlencoded({ extended : false })); //we wont be sending in any form data
 
-let chosenCRNs = [];
+let crnsToCourses = new Map();
 
 const datebook = require('datebook');
-
-const options1 = {
-    title: 'Happy Hour1',
-    location: 'The Bar, New York, NY',
-    description: 'Let\'s blow off some steam with a tall cold one!',
-    start: new Date('2021-11-05T19:00:00'),
-    end: new Date('2021-11-05T20:00:00')
-};
-const options2 = {
-    title: 'Happy Hour2',
-    location: 'The Bar, New York, NY',
-    description: 'Hello!!',
-    start: new Date('2021-11-05T17:00:00'),
-    end: new Date('2021-11-05T18:00:00')
-};
 
 // create
 app.post('/insert', (request, response) => {
@@ -48,13 +33,14 @@ app.get('/getAll', (request, response) => {
 
 })
 
-app.get('/search/:crn', (request, response) => {
-    const { crn } = request.params;
-    console.log("crn:",crn);
+app.get('/search/:entry', (request, response) => {
+    const { entry } = request.params;
+
+    console.log("entry:",entry);
     const db = dbService.getDbServiceInstance();
 
     // this will return a promise, we have to wait
-    const result = db.searchByCRN(crn);
+    const result = db.searchCourse(entry.toUpperCase());
 
     result
     .then(data => response.json({data: data})) //???
@@ -64,35 +50,116 @@ app.get('/search/:crn', (request, response) => {
 app.get('/addCourse/:crn', (request, response) => {
     const { crn } = request.params;
 
-    if(chosenCRNs.indexOf(crn) != -1) {
+    console.log("adding... ",crn,"to: ",crnsToCourses.entries());
+    // don't save it if crn was already save
+    if(crnsToCourses.has(crn)) {
         return;
     }
-
-    chosenCRNs.push(crn);
-    console.log(chosenCRNs);
 
     const db = dbService.getDbServiceInstance();
     const result = db.searchByCRN(crn)
 
     result
-    .then(data => response.json({data: data}))
+    .then(
+        data => {
+            crnsToCourses.set(crn,data[0]); // db query returns a promise; when we resolve it, then add it to the Map
+            response.json({data: data});
+        }
+    )
     .catch(err => console.log(err));
 
 })
 
 app.get('/getCalendar', (request, response) => {
     console.log("sending calendar...");
-    // const link = new datebook.GoogleCalendar(options0).render();
-    // // const result = {link:link};
-
-    // console.log(link);
-    response.send(JSON.stringify([options1,options2]));
     
-    // console.log(options);
-    // console.log(JSON.stringify(options));
-    // response.end(JSON.stringify(options));
+    let calendarOptions = getCalendarOptions();
+
+    result = JSON.stringify(calendarOptions);
+
+    response.send(result);
+    
 })
 
+function getCalendarOptions() {
+    let options = [];
+    let option;
+
+    console.log(crnsToCourses);
+
+    crnsToCourses.forEach(
+        function ({CRN,crs,meetTimeDate,meetTimeHrs}) {
+
+            console.log(CRN,crs);
+
+            let startDate = getStartDate(meetTimeHrs,meetTimeDate)
+            let endDate = getEndDate(meetTimeHrs,meetTimeDate)
+
+            option = {
+                title: crs,
+                location: 'uic',
+                description: 'placeholder',
+                start: new Date(startDate),
+                end: new Date(endDate)
+            };
+
+            options.push(option)
+        }
+    );
+
+    return options;
+}
+//      meetTimeHrs: '0800--0850',
+//      meetTimeDate: '08/23/2021--12/03/2021'
+function getStartDate(meetTimeHrs,meetTimeDate) {
+    console.log(meetTimeDate,meetTimeHrs);
+
+    meetTimeDate = meetTimeDate.substr(0,meetTimeDate.indexOf('-'));
+    meetTimeHrs = meetTimeHrs.substr(0,meetTimeHrs.indexOf('-'));
+    
+    console.log(meetTimeDate,meetTimeHrs);
+
+    let yr = meetTimeDate.slice(-4);
+    let dy = meetTimeDate.substr(3,2);
+    let mo = meetTimeDate.substr(0,2);
+
+    console.log(yr,mo,dy);
+    
+    let hr = meetTimeHrs.substr(0,2);
+    let mi = meetTimeHrs.slice(-2);
+    
+    console.log(hr,mi);
+
+    var res = yr+"-"+mo+"-"+dy+"T"+hr+":"+mi+":"+"00";
+    console.log("res:",res);
+    return res;
+}
+
+function getEndDate(meetTimeHrs,meetTimeDate) {
+    console.log(meetTimeDate,meetTimeHrs);
+
+    meetTimeDate = meetTimeDate.substr(meetTimeDate.indexOf('-')+2);
+    meetTimeHrs = meetTimeHrs.substr(meetTimeHrs.indexOf('-')+2);
+    
+    console.log(meetTimeDate,meetTimeHrs);
+
+    let yr = meetTimeDate.slice(-4);
+    let dy = meetTimeDate.substr(3,2);
+    let mo = meetTimeDate.substr(0,2);
+
+    console.log(yr,mo,dy);
+    
+    let hr = meetTimeHrs.substr(0,2);
+    let mi = meetTimeHrs.slice(-2);
+    
+    console.log(hr,mi);
+
+    var res = yr+"-"+mo+"-"+dy+"T"+hr+":"+mi+":"+"00";
+    console.log("res:",res);
+
+    return res;
+    
+}
 // update
 
 // delete

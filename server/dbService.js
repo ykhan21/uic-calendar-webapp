@@ -38,7 +38,33 @@ class DbService {
 
             });
 
-            console.log(response);
+            console.log("getAllData query ran...");
+            // console.log(response);
+            return response;
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async searchCourse(entry) {
+        try {
+            // if query successful, resolve. otherwise reject
+            const response = await new Promise((resolve, reject) => {
+                const query = 
+                "SELECT CRN,concat(`Crs Subj Cd`,`Crs Nbr`) AS crs,\
+                `Start Time -- End Time` AS `meetTimeHrs`, \
+                `Start Date -- End Date` AS `meetTimeDate` \
+                FROM course_data HAVING crs = ? OR crn = ?;";
+
+                connection.query(query, [entry, entry], (err, results) => {
+                    if (err) reject (new Error(err.message)); // will be caught be catch block
+                    resolve(results);
+                })
+
+            });
+
+            console.log("crs query res:",response);
             return response;
 
         } catch (error) {
@@ -50,7 +76,12 @@ class DbService {
         try {
             // if query successful, resolve. otherwise reject
             const response = await new Promise((resolve, reject) => {
-                const query = "SELECT CRN,concat(`Crs Subj Cd`,' ',`Crs Nbr`) AS crs FROM course_data WHERE crn = ?;";
+//                const query = "SELECT CRN,concat(`Crs Subj Cd`,`Crs Nbr`) AS crs FROM course_data WHERE crn = ?;";
+            const query =                
+                "SELECT CRN,concat(`Crs Subj Cd`,`Crs Nbr`) AS crs,\
+                `Start Time -- End Time` AS `meetTimeHrs`, \
+                `Start Date -- End Date` AS `meetTimeDate` \
+                FROM course_data WHERE crn = ?;";
 
                 connection.query(query, [crn], (err, results) => {
                     if (err) reject (new Error(err.message)); // will be caught be catch block
@@ -59,7 +90,7 @@ class DbService {
 
             });
 
-            console.log(response);
+            console.log("crn query res:",response);
             return response;
 
         } catch (error) {

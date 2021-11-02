@@ -1,14 +1,55 @@
+//
+// call this when the document is loaded
+//
 document.addEventListener('DOMContentLoaded', function () {
     // a fetch api call from frontend
     fetch('http://localhost:5000/getAll')
     .then(response => response.json())
-    .then(data => loadHTMLTable(data['data']));
+    .then(data => loadHTMLTable([]));
 });
 
-const searchBtn = document.querySelector('#search-btn');
+function loadHTMLTable(data) {
+    const table = document.querySelector('.search.table.body');
 
+    if (data.length === 0) {
+        table.innerHTML = "<tr><td class='no-data' colspan='3'>No Data</td></tr>";
+        return;
+    }
+
+    let tableHtml = _helper(data,true);
+
+    table.innerHTML = tableHtml;
+}
+
+function _helper(data,isAdd) {
+    let tableHtml="";
+    // get crn number and course name
+    data.forEach(function ({CRN,crs,meetTimeHrs,meetTimeDate}) {
+
+        let btnString=`<button class="add-course-btn" data-id="${CRN}">Add</button>`;
+    
+        if (!isAdd) {
+            btnString=`<button class="rem-course-btn" data-id="${CRN}">Remove</button>`;
+        }
+        
+        tableHtml += "<tr>";
+        tableHtml += `<td>${CRN}</td>`;
+        tableHtml += `<td>${crs}</td>`;
+        tableHtml += `<td>${meetTimeHrs}</td>`;
+        tableHtml += `<td>${meetTimeDate}</td>`;
+        tableHtml += `<td>${btnString}</td>`;
+        tableHtml += "</tr>";
+    });
+    return tableHtml;
+}
+
+//
+// call this when the searchBtn is clicked
+//
+const searchBtn = document.querySelector('#search-btn');
 searchBtn.onclick = function() {
     const searchValue = document.querySelector('#search-input').value;
+    
 
     fetch('http://localhost:5000/search/' + searchValue)
     .then(response => response.json())
@@ -25,6 +66,9 @@ searchBtn.onclick = function() {
 //     }
 // });
 
+// 
+// call this when any add-course-btn is clicked 
+//
 document.querySelector('table tbody').addEventListener
 ('click', function(event) {
     console.log(event.target);
@@ -51,58 +95,19 @@ function insertRowIntoChosenTable(data) {
         return;
     }
 
-    let tableHtml = "";
-    
-    // get crn number and course name
-    data.forEach(function ({CRN,crs}) {
-        tableHtml += "<tr>";
-        tableHtml += `<td>${CRN}</td>`;
-        tableHtml += `<td>${crs}</td>`;
-        tableHtml += `<td><button class="remove-course-btn" data-id="${CRN}">Remove</button></td>`;
-        tableHtml += "</tr>";
-    });
+    let tableHtml = _helper(data,false);
 
     table.innerHTML += tableHtml;
     
 }
 
-function loadHTMLTable(data) {
-    const table = document.querySelector('.search.table.body');
-
-    if (data.length === 0) {
-        table.innerHTML = "<tr><td class='no-data' colspan='2'>No Data</td></tr>";
-        return;
-    }
-
-    let tableHtml = "";
-    
-    // get crn number and course name
-    data.forEach(function ({CRN,crs}) {
-        tableHtml += "<tr>";
-        tableHtml += `<td>${CRN}</td>`;
-        tableHtml += `<td>${crs}</td>`;
-        tableHtml += `<td><button class="add-course-btn" data-id="${CRN}">Add</button></td>`;
-        tableHtml += "</tr>";
-    });
-
-    table.innerHTML = tableHtml;
-}
-
+//
+// call this when the calendarBtn is clicked
+//
 const calendarBtn = document.querySelector('#calendar-btn');
 
 calendarBtn.onclick = function() {
     
-    // options0.addEvent(options);
-    // options0.download();
-
-    // const link = new datebook.GoogleCalendar(options0).render();
-    // console.log(link);
-    // // console.log(options);
-    // // const ical = new datebook.ICalendar(options);
-
-    // let global;
-
-
     fetch('http://localhost:5000/getCalendar/')
     .then(response => response.json())
     .then(data => loadCalendar(data))
@@ -115,30 +120,31 @@ calendarBtn.onclick = function() {
 }
 
 function loadCalendar(data) {
-    const options1 = {
-        title: 'Happy Hour1',
-        location: 'The Bar, New York, NY',
-        description: 'Let\'s blow off some steam with a tall cold one!',
-        start: new Date('2021-11-05T19:00:00'),
-        end: new Date('2021-11-05T20:00:00')
-    };
-    const options2 = {
-        title: 'Happy Hour2',
-        location: 'The Bar, New York, NY',
-        description: 'Hello!!',
-        start: new Date('2021-11-05T17:00:00'),
-        end: new Date('2021-11-05T18:00:00')
-    };
+    let ical = null;
 
-    let data1 = data[0]
-    const options3 = {
-        title: data1['title'],
-        location: data1['location'],
-        description: data1['description'],
-        start: new Date(data1['start']),
-        end: new Date(data1['end'])
-    }
+    data.forEach(
+        function(option) {
+            console.log(option);
+            
+            const opt = {
+                title: option['title'],
+                location: option['location'],
+                description: option['description'],
+                start: new Date(option['start']),
+                end: new Date(option['end'])
+            }
+            
+            console.log(opt);
 
-    let ical1 = (new datebook.ICalendar(options3));
-    ical1.download();
+            if (ical === null) {
+                ical = new datebook.ICalendar(opt)
+            } else {
+                ical.addEvent(new datebook.ICalendar(opt));
+            }
+        }
+    )
+    // const options3 = {
+    // }
+
+    new ical.download();
 }
