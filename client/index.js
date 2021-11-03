@@ -1,11 +1,19 @@
+
+let sessionID;
+
 //
 // call this when the document is loaded
 //
 document.addEventListener('DOMContentLoaded', function () {
-    // a fetch api call from frontend
-    fetch('http://localhost:5000/getAll')
+    // // a fetch api call from frontend
+    // fetch('http://localhost:5000/getAll')
+    // .then(response => response.json())
+    // .then(data => loadHTMLTable([]));
+
+    fetch('http://localhost:5000/getSessionID')
     .then(response => response.json())
-    .then(data => loadHTMLTable([]));
+    .then(data => sessionID=data['id'])
+    // .then(data => console.log("sesh:",data['id']))
 });
 
 function loadHTMLTable(data) {
@@ -80,7 +88,7 @@ document.querySelector('.chosen.table.body').addEventListener
 
 function removeCourse(crn) {
         
-    fetch('http://localhost:5000/delete/' + crn, {
+    fetch('http://localhost:5000/delete/'+ sessionID +'/'+ crn, {
         method: 'DELETE'
     })
     .then(response => response.json())
@@ -112,7 +120,7 @@ document.querySelector('.search.table.body').addEventListener
 function addCourse(crn) {
     // const searchValue = document.querySelector('#search-input').crn;
 
-    fetch('http://localhost:5000/addCourse/' + crn)
+    fetch('http://localhost:5000/addCourse/' + sessionID +'/'+ crn)
     .then(response => response.json())
     .then(data => insertRowIntoChosenTable(data['data']));
 }
@@ -156,7 +164,7 @@ calendarBtn.onclick = function() {
     // let ical = (new datebook.ICalendar(opt));
     // ical.download();
     
-    fetch('http://localhost:5000/getCalendar/')
+    fetch('http://localhost:5000/getCalendar/' + sessionID)
     .then(response => response.json())
     .then(data => loadCalendar(data))
     // .then(response => response.text())

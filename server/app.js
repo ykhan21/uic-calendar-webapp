@@ -11,13 +11,24 @@ app.use(cors()); //so that if we have an incoming api call, it wont block it and
 app.use(express.json()); //so we'll be able to send in json format
 app.use(express.urlencoded({ extended : false })); //we wont be sending in any form data
 
-let crnsToCourses = new Map();
+// let crnsToCourses = new Map();
+
+let sessions = 0;
+let sessionsData = [];
 
 const datebook = require('datebook');
 
 // create
 app.post('/insert', (request, response) => {
 
+});
+
+app.get('/getSessionID', (request, response) => {
+    console.log("new session id:",sessions);
+
+    sessionsData.push(new Map());
+
+    response.json({id:sessions++})
 });
 
 // read
@@ -47,9 +58,15 @@ app.get('/search/:entry', (request, response) => {
     .catch(err => console.log(err));
 })
 
-app.delete('/delete/:crn', (request,response) => {
+app.delete('/delete/:id/:crn', (request,response) => {
     const { crn } = request.params;
+    let { id } = request.params;
+
+    id = parseInt(id);
+
     console.log("delete: ",request.params);
+
+    let crnsToCourses = sessionsData[id];
 
     let res = crnsToCourses.delete(crn);
 
@@ -60,9 +77,13 @@ app.delete('/delete/:crn', (request,response) => {
     console.log("removed",crn,":",crnsToCourses.entries());
 })
 
-app.get('/addCourse/:crn', (request, response) => {
+app.get('/addCourse/:id/:crn', (request, response) => {
     const { crn } = request.params;
+    let { id } = request.params;
+    id = parseInt(id);
 
+    let crnsToCourses = sessionsData[id];
+    console.log("adding...:",id,crnsToCourses);
     console.log("adding... ",crn,"to: ",crnsToCourses.entries());
     // don't save it if crn was already save
     if(crnsToCourses.has(crn)) {
@@ -83,10 +104,12 @@ app.get('/addCourse/:crn', (request, response) => {
 
 })
 
-app.get('/getCalendar', (request, response) => {
+app.get('/getCalendar/:id', (request, response) => {
+    let { id } = request.params;
+    id = parseInt(id);
     console.log("sending calendar...");
     
-    let calendarOptions = getCalendarOptions();
+    let calendarOptions = getCalendarOptions(id);
 
     result = JSON.stringify(calendarOptions);
 
@@ -94,9 +117,11 @@ app.get('/getCalendar', (request, response) => {
     
 })
 
-function getCalendarOptions() {
+function getCalendarOptions(id) {
     let options = [];
     let option;
+
+    let crnsToCourses = sessionsData[id];
 
     console.log(crnsToCourses);
 
