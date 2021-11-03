@@ -6,22 +6,68 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>uic scheduler</title>
         <link rel="stylesheet" href="stylesheet.css">
+
+        <link
+            href="https://fonts.googleapis.com/css?family=Montserrat&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         
         <!-- should this be at the end of the body? -->
         <script src="https://cdn.jsdelivr.net/npm/datebook" defer></script>
         <script src="index.js" defer></script>
+        <script src="theme.js" defer></script>
 
     </head>
 
-    <body>
+    <body class="dark">
+        <nav class="navbar">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="https://www.github.com/ykhan21">Contribute</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#footer">Help</a>
+                </li>
+
+                <!-- Dropdown -->
+
+                <li class="nav-item has-dropdown">
+                    <a href="#">Theme</a>
+                    <ul class="dropdown">
+                        <li class="dropdown-item">
+                            <a id="light" href="#">light</a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a id="dark" href="#">dark</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">Login</li>
+            </ul>
+        </nav>
+
+        <header>
+            <img src="calendar.png" height="150" width="150" alt="calendar-icon">
+            <h1>UIC Scheduler</h1>
+            <p>Select your courses and import to Google Calendar!</p>
+        </header>
+
         <main>
             
             <input placeholder="search courses"
+            class="form-input"
             id="search-input">
-            <button class="button" id="search-btn">Search</button>
+            <button class="btn button" id="search-btn">Search <i class="fa fa-search"></i></button>
+
+            <div class="calendar button container">
+                <button class="btn" id="calendar-btn">Add to Calendar <i class="fa fa-calendar"></i></button>
+            </div>
             
             <div class="table container">
                 <div class="search container">
+                    <h4>Search Results:</h4>
                     <table class="search table">
                         <thead>
                             <th>CRN</th>
@@ -36,6 +82,7 @@
                 </div>
                 
                 <div class="chosen container">
+                    <h4>Selected Courses:</h4>
                     <table class="chosen table">
                         <thead>
                             <th>CRN</th>
@@ -49,11 +96,16 @@
                     </table>
                 </div>
                 
-                <div class="calendar button container">
-                    <button id="calendar-btn">Add to Calendar</button>
-                </div>
 
             </div>
         </main>
+        <footer id="footer">
+            <h4>Help:</h4>
+            <ol>
+                <li>Enter CRN or Course Code (e.g., 32983 or cs401)</li>
+                <li>Select courses you would like to add to your calendar</li>
+                <li>After selecting, click 'Add to Calendar' to download your .ical file</li>
+            </ol>
+        </footer>
     </body>
 </html>

@@ -34,10 +34,10 @@ function _helper(data,isAdd) {
     // get crn number and course name
     data.forEach(function ({CRN,crs,meetTimeHrs,meetTimeDate,meetTimeDays}) {
 
-        let btnString=`<button class="add-course-btn" data-id="${CRN}">Add</button>`;
+        let btnString=`<button class="btn add-course-btn" data-id="${CRN}">Add</button>`;
     
         if (!isAdd) {
-            btnString=`<button class="rem-course-btn" onclick="del_tr(this)" data-id="${CRN}">Remove</button>`;
+            btnString=`<button class="btn rem-course-btn" onclick="del_tr(this)" data-id="${CRN}">Remove</button>`;
         }
         
         tableHtml += "<tr>";

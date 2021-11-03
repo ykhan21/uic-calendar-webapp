@@ -1,3 +1,126 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    transition: background 500ms ease-in-out, color 1000ms ease-in-out;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: currentColor;
+    text-decoration: none;
+}
+
+.navbar {
+    height: 70px;
+    width: 100%;
+    background: var(--bg-nav);
+    color: var(--text);
+}
+
+.navbar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 100%;
+}
+
+.dropdown {
+    position: absolute;
+    width: 500px;
+    opacity: 0;
+    z-index: 2;
+    background: var(--bg-dropdown);
+    border-top: 2px solid var(--border-color);
+
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 3rem;
+    margin-top: 2rem;
+    padding: 0.5rem;
+   
+    box-shadow: rgba(2, 8, 20, 0.1) 0px 0.175em 0.5em;
+    transform: translateX(-40%);
+
+    transition: opacity .15s ease-out;
+}
+
+.has-dropdown:focus-within .dropdown   {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.dropdown-item a {
+    width: 100%;
+    height: 100%;
+    size: 0.7rem;
+    padding-left: 10px;
+    font-weight: bold;
+}
+
+.dropdown-item a::before {
+    content: ' ';
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+header {
+    padding: 1em;
+    clip-path: polygon(50% 0%, 100% 0px, 95% 50%, 80% 80%, 50% 100%, 20% 80%, 5% 50%, 0px 0px);
+    background: var(--bg-nav);
+    margin-bottom: 1em;
+    padding-bottom: 3.5em;
+    text-align: center;
+}
+
+:root {
+    --color0: #b76935;
+    --color1: #935e38;
+    --color2: #815839;
+    --color3: #4a473e;
+    --color4: #263c41;
+    --color5: #143642;
+    --color6: #1e1a16;
+    --blue: #0084a5;
+    --purple: #a82dd1;
+    --yellow: #fff565;
+}
+
+.light {
+    --bg: #f0dac6;
+    --bg-nav: linear-gradient(to right, #f1bb88, var(--color1));
+    --bg-dropdown: var(--color0);
+    --text: var(--color6);
+    --border-color: var(--blue);
+    --bg-solar: var(--yellow);
+}
+  
+
+.dark {
+    --bg: var(--color5);
+    --bg-nav: linear-gradient(to right, var(--color5), var(--color6));
+    --bg-dropdown: var(--color6);
+    --text: var(--color0);
+    --border-color: var(--purple);
+    --bg-solar: var(--blue);
+}
+
 main {
     width: 50%;
     margin: 50px auto;
@@ -5,7 +128,8 @@ main {
 }
 
 table {
-    margin: 50px auto;
+    margin: 10px;
+    margin-top: 2px;
 }
 
 table, th, td {
@@ -16,8 +140,12 @@ table, th, td {
 th, td {
     padding: 5px;
 }
-
+main {
+    width: 100%;
+}
 .table.container {
+    width: 80%;
+    margin: auto;
     display: flex;
     justify-content: space-evenly;
     align-items: flex-start;
@@ -25,4 +153,41 @@ th, td {
 
 .calendar.button {
     margin-top: 50px;
+}
+h4 {
+    margin: 0px;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.btn {
+  border: 1px solid var(--text);
+  background-color: #f1bb88;
+  border-radius: .25rem;
+  padding: .25rem .2rem;
+  font-size: .8rem;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+}
+
+.form-input {
+    height: 1.2rem;
+    padding: .25rem .5rem;
+    border-radius: .25rem;
+    border: 1px solid var(--text);
+    background-color: lemonchiffon;
+    color: chartreuse;
+    font-size: 1rem;
+    font-weight: normal;
+    font-family: 'Gotham Rounded';
+    outline: none;
+}
+
+@media all and (max-width: 1200px) {
+    .table.container {
+        width: 95%;
+        flex-direction: column;
+        align-items: center;
+    }
 }
