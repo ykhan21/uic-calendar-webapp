@@ -19,6 +19,12 @@ connection.connect((err) => {
     console.log('db ' + connection.state);
 });
 
+const searchQuery =
+"SELECT CRN,concat(`Crs Subj Cd`,`Crs Nbr`) AS crs,\
+`Start Time -- End Time` AS `meetTimeHrs`, \
+`Start Date -- End Date` AS `meetTimeDate`, \
+`Meeting Days` AS `meetTimeDays` ";
+
 // create class containing functions to CRUD data
 class DbService {
     static getDbServiceInstance() {
@@ -52,10 +58,8 @@ class DbService {
             // if query successful, resolve. otherwise reject
             const response = await new Promise((resolve, reject) => {
                 const query = 
-                "SELECT CRN,concat(`Crs Subj Cd`,`Crs Nbr`) AS crs,\
-                `Start Time -- End Time` AS `meetTimeHrs`, \
-                `Start Date -- End Date` AS `meetTimeDate` \
-                FROM course_data HAVING crs = ? OR crn = ?;";
+                searchQuery +
+                "FROM course_data HAVING crs = ? OR crn = ?;";
 
                 connection.query(query, [entry, entry], (err, results) => {
                     if (err) reject (new Error(err.message)); // will be caught be catch block
@@ -78,10 +82,8 @@ class DbService {
             const response = await new Promise((resolve, reject) => {
 //                const query = "SELECT CRN,concat(`Crs Subj Cd`,`Crs Nbr`) AS crs FROM course_data WHERE crn = ?;";
             const query =                
-                "SELECT CRN,concat(`Crs Subj Cd`,`Crs Nbr`) AS crs,\
-                `Start Time -- End Time` AS `meetTimeHrs`, \
-                `Start Date -- End Date` AS `meetTimeDate` \
-                FROM course_data WHERE crn = ?;";
+                searchQuery+
+                "FROM course_data WHERE crn = ?;";
 
                 connection.query(query, [crn], (err, results) => {
                     if (err) reject (new Error(err.message)); // will be caught be catch block

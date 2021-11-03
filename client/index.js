@@ -24,12 +24,12 @@ function loadHTMLTable(data) {
 function _helper(data,isAdd) {
     let tableHtml="";
     // get crn number and course name
-    data.forEach(function ({CRN,crs,meetTimeHrs,meetTimeDate}) {
+    data.forEach(function ({CRN,crs,meetTimeHrs,meetTimeDate,meetTimeDays}) {
 
         let btnString=`<button class="add-course-btn" data-id="${CRN}">Add</button>`;
     
         if (!isAdd) {
-            btnString=`<button class="rem-course-btn" data-id="${CRN}">Remove</button>`;
+            btnString=`<button class="rem-course-btn" onclick="del_tr(this)" data-id="${CRN}">Remove</button>`;
         }
         
         tableHtml += "<tr>";
@@ -37,6 +37,7 @@ function _helper(data,isAdd) {
         tableHtml += `<td>${crs}</td>`;
         tableHtml += `<td>${meetTimeHrs}</td>`;
         tableHtml += `<td>${meetTimeDate}</td>`;
+        tableHtml += `<td>${meetTimeDays}</td>`;
         tableHtml += `<td>${btnString}</td>`;
         tableHtml += "</tr>";
     });
@@ -66,10 +67,41 @@ searchBtn.onclick = function() {
 //     }
 // });
 
+//
+// when any rem-course-btn is clicked
+//
+document.querySelector('.chosen.table.body').addEventListener
+('click', function(event) {
+    console.log(event.target);
+    if(event.target.className === "rem-course-btn") {
+        removeCourse(event.target.dataset.id);
+    }
+})
+
+function removeCourse(crn) {
+        
+    fetch('http://localhost:5000/delete/' + crn, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    // .then(data => );
+    // .then(data => console.log(data))
+
+}
+
+function del_tr(remtr)  
+{   
+    // console.log("deeleet");
+    while((remtr.nodeName.toLowerCase())!='tr')
+        remtr = remtr.parentNode;
+
+    remtr.parentNode.removeChild(remtr);
+}
+
 // 
 // call this when any add-course-btn is clicked 
 //
-document.querySelector('table tbody').addEventListener
+document.querySelector('.search.table.body').addEventListener
 ('click', function(event) {
     console.log(event.target);
     if(event.target.className === "add-course-btn") {
@@ -107,6 +139,22 @@ function insertRowIntoChosenTable(data) {
 const calendarBtn = document.querySelector('#calendar-btn');
 
 calendarBtn.onclick = function() {
+    // var opt = 
+    //     {
+    //         "title": "cs301",
+    //         "description": "placeholder",
+    //         "start": new Date("2021-11-03T16:00:00.000Z"),
+    //         "end": new Date("2021-11-03T17:00:00.000Z"),
+    //         "recurrence": {
+    //             "frequency": "DAILY",
+    //             "interval": 1,
+    //             "end": new Date("2021-11-16T00:00:00Z")
+    //         },
+    //         "location": "uic"
+    //     }
+
+    // let ical = (new datebook.ICalendar(opt));
+    // ical.download();
     
     fetch('http://localhost:5000/getCalendar/')
     .then(response => response.json())
@@ -125,16 +173,23 @@ function loadCalendar(data) {
     data.forEach(
         function(option) {
             console.log(option);
+
             
             const opt = {
                 title: option['title'],
                 location: option['location'],
                 description: option['description'],
                 start: new Date(option['start']),
-                end: new Date(option['end'])
+                end: new Date(option['end']),
+                recurrence: {
+                    frequency:option['recurrence']['frequency'],
+                    interval:option['recurrence']['interval'],
+                    weekdays:option['recurrence']['weekdays'],
+                    end:new Date(option['recurrence']['end'])
+                }
             }
             
-            console.log(opt);
+            console.log("opt:",opt);
 
             if (ical === null) {
                 ical = new datebook.ICalendar(opt)
@@ -143,8 +198,6 @@ function loadCalendar(data) {
             }
         }
     )
-    // const options3 = {
-    // }
 
     new ical.download();
 }

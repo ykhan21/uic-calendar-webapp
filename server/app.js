@@ -47,6 +47,19 @@ app.get('/search/:entry', (request, response) => {
     .catch(err => console.log(err));
 })
 
+app.delete('/delete/:crn', (request,response) => {
+    const { crn } = request.params;
+    console.log("delete: ",request.params);
+
+    let res = crnsToCourses.delete(crn);
+
+    response.json({ 
+        success: res
+    })
+
+    console.log("removed",crn,":",crnsToCourses.entries());
+})
+
 app.get('/addCourse/:crn', (request, response) => {
     const { crn } = request.params;
 
@@ -88,7 +101,7 @@ function getCalendarOptions() {
     console.log(crnsToCourses);
 
     crnsToCourses.forEach(
-        function ({CRN,crs,meetTimeDate,meetTimeHrs}) {
+        function ({CRN,crs,meetTimeDate,meetTimeHrs,meetTimeDays}) {
 
             console.log(CRN,crs);
 
@@ -99,8 +112,14 @@ function getCalendarOptions() {
                 title: crs,
                 location: 'uic',
                 description: 'placeholder',
-                start: new Date(startDate),
-                end: new Date(endDate)
+                start: startDate,
+                end: endDate,
+                recurrence: {
+                    frequency: 'WEEKLY',
+                    interval: 1,
+                    weekdays: getWeekdays(meetTimeDays),
+                    end: getUntilDate(meetTimeDate)
+                }
             };
 
             options.push(option)
@@ -138,7 +157,7 @@ function getStartDate(meetTimeHrs,meetTimeDate) {
 function getEndDate(meetTimeHrs,meetTimeDate) {
     console.log(meetTimeDate,meetTimeHrs);
 
-    meetTimeDate = meetTimeDate.substr(meetTimeDate.indexOf('-')+2);
+    meetTimeDate = meetTimeDate.substr(0,meetTimeDate.indexOf('-'));
     meetTimeHrs = meetTimeHrs.substr(meetTimeHrs.indexOf('-')+2);
     
     console.log(meetTimeDate,meetTimeHrs);
@@ -159,6 +178,43 @@ function getEndDate(meetTimeHrs,meetTimeDate) {
 
     return res;
     
+}
+
+function getUntilDate(meetTimeDate) {
+    console.log(meetTimeDate);
+
+    meetTimeDate = meetTimeDate.substr(meetTimeDate.indexOf('-')+2);
+    
+    console.log(meetTimeDate);
+    let yr = meetTimeDate.slice(-4);
+    let dy = meetTimeDate.substr(3,2);
+    let mo = meetTimeDate.substr(0,2);
+
+    console.log(yr,mo,dy);
+    
+    var res = yr+"-"+mo+"-"+formatInt((parseInt(dy)+1))+"T"+"00"+":"+"00"+":"+"00";
+    
+    console.log("res:",res);
+
+    return res;
+    
+}
+
+function formatInt(i) {
+    if (i<10) return "0"+i;
+    return ""+i;
+}
+
+function getWeekdays(meetDays) {
+    let wkdays = [];
+
+    if (meetDays.indexOf("M")>-1) wkdays.push("MO");
+    if (meetDays.indexOf("T")>-1) wkdays.push("TU");
+    if (meetDays.indexOf("W")>-1) wkdays.push("WE");
+    if (meetDays.indexOf("R")>-1) wkdays.push("TH");
+    if (meetDays.indexOf("F")>-1) wkdays.push("FR");
+
+    return wkdays;
 }
 // update
 
